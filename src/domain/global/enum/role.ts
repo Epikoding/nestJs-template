@@ -1,6 +1,6 @@
 export enum Role {
-  ADMIN,
-  USER,
-  TEMPORARY,
-  BLOCKED,
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  TEMPORARY = 'TEMPORARY',
+  BLOCKED = 'BLOCKED',
 }

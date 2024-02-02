@@ -1,8 +1,8 @@
 export class GetUserDto {
-  readonly userId?: number;
-  readonly email?: string;
-  readonly name?: string;
-  readonly count?: number;
+  readonly userId: number;
+  readonly email: string;
+  readonly name: string;
+  readonly count: number;
 
   private constructor(userId?: number, email?: string, name?: string, count?: number) {
     this.userId = userId;

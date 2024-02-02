@@ -2,9 +2,9 @@ import { UserEntity } from '../entity/user.entity';
 import { BaseDto } from '../../../base.dto';
 
 export class CreateUserDto extends BaseDto {
-  readonly name?: string;
-  readonly email?: string;
-  readonly password?: string;
+  readonly name: string;
+  readonly email: string;
+  readonly password: string;
 
   // createUser
   constructor(userEntity: UserEntity) {

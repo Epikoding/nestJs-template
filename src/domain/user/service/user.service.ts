@@ -1,29 +1,36 @@
-import { ConflictException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
-import { CreateUserDto } from "../dto/create-user.dto";
-import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "../entity/user.entity";
-import { Repository } from "typeorm";
-import { Result } from "../../../base.result";
-import { GetUserDto } from "../dto/get-user.dto";
-import { UpdateUserDto } from "../dto/update-user.dto";
+import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '../entity/user.entity';
+import { Repository } from 'typeorm';
+import { Result } from '../../../base.result';
+import { GetUserDto } from '../dto/get-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { AuthorityService } from './authority.service';
+import { Role } from '../../global/enum/role';
 
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>) {
+  constructor(@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
+              private authorityService: AuthorityService
+  ) {
   }
 
   public async createUser(createUserDto: CreateUserDto): Promise<Result<CreateUserDto>> {
-    const email = createUserDto.email;
-    if (email != null) {
+    const { email, name, password } = createUserDto;
+
+    if (email) {
       const existingUser: UserEntity = await this.getUserEntityByEmail(email);
 
-      if (existingUser != null) {
-        throw new ConflictException("해당 이메일로 존재하는 유저가 있습니다. 아이디 값은 " + existingUser.id + "입니다.");
+      if (existingUser) {
+        throw new ConflictException(`해당 이메일로 존재하는 유저가 있습니다. 아이디 값은 ${existingUser.id}입니다.`);
       }
     }
 
-    const userEntity = this.userRepository.create(createUserDto);
+    const authorityEntity = await this.authorityService.findOneByRole(Role.TEMPORARY);
+    const userEntity = new UserEntity(name, email, password, authorityEntity);
+
     await this.userRepository.save(userEntity);
 
     const userDto = CreateUserDto.from(userEntity);
@@ -33,7 +40,7 @@ export class UserService {
   public async findUserList(): Promise<Result<GetUserDto[]>> {
     const userEntityList: UserEntity[] = await this.getUserList();
     if (userEntityList == null) {
-      return Result.error(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다.");
+      return Result.error(HttpStatus.NOT_FOUND, '유저를 찾을 수 없습니다.');
     }
 
     return Result.success(userEntityList.map(v => GetUserDto.createInstance(v.id, v.email, v.name)));
@@ -60,14 +67,14 @@ export class UserService {
 
     await this.userRepository.save(userEntity);
 
-    const userDto = UpdateUserDto.from(userEntity);
+    const userDto = UpdateUserDto.createInstance(userEntity.id, userEntity.email);
     return Result.success(userDto);
   }
 
   public async deleteUserByEmail<T>(email: string): Promise<Result<T>> {
     const userEntity = await this.getUserEntityByEmail(email);
     if (userEntity == null) {
-      throw new NotFoundException("삭제할 유저가 없습니다.");
+      throw new NotFoundException('삭제할 유저가 없습니다.');
     }
 
     await this.deleteUserEntityByUserId(userEntity);
@@ -78,7 +85,7 @@ export class UserService {
   public async findUserCount(): Promise<Result<GetUserDto>> {
     const userCount = await this.getUserCount();
     const userDto = GetUserDto.withCountOnly(userCount);
-    
+
     return Result.success(userDto);
   }
 

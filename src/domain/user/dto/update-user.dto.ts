@@ -1,17 +1,17 @@
-import { UserEntity } from "../entity/user.entity";
-
 export class UpdateUserDto {
-  readonly name?: string;
-  readonly email?: string;
-  readonly password?: string;
+  readonly userId: number;
+  readonly name: string;
+  readonly email: string;
+  readonly password: string;
 
-  constructor(userEntity: UserEntity) {
-    this.name = userEntity.name;
-    this.email = userEntity.email;
-    this.password = userEntity.password;
+  private constructor(userId: number, name: string, email: string, password: string) {
+    this.userId = userId;
+    this.name = name;
+    this.email = email;
+    this.password = password;
   }
 
-  static from(userEntity: UserEntity) {
-    return new UpdateUserDto(userEntity);
+  static createInstance(userId?: number, name?: string, email?: string, password?: string) {
+    return new UpdateUserDto(userId, name, email, password);
   }
 }
