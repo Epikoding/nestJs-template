@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../base.entity';
-import { Role } from '../../global/enum/role';
+import { Role } from '../enum/role';
 import { UserAuthorityEntity } from './user-authority.entity';
 
 @Entity()

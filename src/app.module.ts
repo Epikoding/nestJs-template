@@ -1,17 +1,17 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './domain/user/module/user.module';
 import { UserEntity } from './domain/user/entity/user.entity';
 import { AuthorityEntity } from './domain/user/entity/authority.entity';
 import { UserAuthorityEntity } from './domain/user/entity/user-authority.entity';
-import { AuthorityDataSeederService } from './domain/data/data.seeder.service';
+import { LoggingMiddleware } from './domain/user/middleware/logging.middleware';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // Makes the ConfigService available throughout your application
-      envFilePath: 'local.env',
+      envFilePath: 'local.env'
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -24,11 +24,17 @@ import { AuthorityDataSeederService } from './domain/data/data.seeder.service';
         database: configService.get('DATABASE_NAME'),
         synchronize: true, // Be careful with this in production!
         logging: true,
-        entities: [UserEntity, AuthorityEntity, UserAuthorityEntity],
+        entities: [UserEntity, AuthorityEntity, UserAuthorityEntity]
       }),
-      inject: [ConfigService],
+      inject: [ConfigService]
     }),
-    UserModule,
-  ],
+    UserModule
+  ]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggingMiddleware)
+      .forRoutes('*');
+  }
+}

@@ -7,7 +7,7 @@ import { Result } from '../../../base.result';
 import { GetUserDto } from '../dto/get-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { AuthorityService } from './authority.service';
-import { Role } from '../../global/enum/role';
+import { Role } from '../enum/role';
 
 
 @Injectable()
@@ -48,6 +48,9 @@ export class UserService {
 
   public async findUserByEmail(email: string): Promise<Result<GetUserDto>> {
     const userEntity = await this.getUserEntityByEmail(email);
+    if (userEntity == null) {
+      throw new NotFoundException(`${email}로 유저 정보를 찾을 수 없습니다`);
+    }
     const userDto = GetUserDto.createInstance(userEntity.id, userEntity.email, userEntity.name);
 
     return Result.success(userDto);
