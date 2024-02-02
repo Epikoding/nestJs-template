@@ -23,7 +23,7 @@ import { LoggingMiddleware } from './domain/user/middleware/logging.middleware';
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
         synchronize: true, // Be careful with this in production!
-        logging: true,
+        logging: false,
         entities: [UserEntity, AuthorityEntity, UserAuthorityEntity]
       }),
       inject: [ConfigService]

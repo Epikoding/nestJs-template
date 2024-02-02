@@ -1,5 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
+import { Logger } from '../../logger';
 
 @Injectable()
 export class LoggingMiddleware implements NestMiddleware {
@@ -25,9 +26,9 @@ export class LoggingMiddleware implements NestMiddleware {
     const logMessage = `Request type: ${requestType}, from IP: ${clientIP}, to servletPath: ${servletPath}, parameters: ${parameters}`;
 
     if (content) {
-      console.log(logMessage + ', with body: ' + content);
+      Logger.info(logMessage + ', with body: ' + content);
     } else {
-      console.log(logMessage);
+      Logger.info(logMessage);
     }
   }
 
@@ -35,9 +36,9 @@ export class LoggingMiddleware implements NestMiddleware {
     const logMessage = `Response with status code: ${responseCode}`;
 
     if (responseBody) {
-      console.log(logMessage + ', with body: ' + responseBody);
+      Logger.info(logMessage + ', with body: ' + responseBody);
     } else {
-      console.log(logMessage);
+      Logger.info(logMessage);
     }
   }
 }

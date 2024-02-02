@@ -7,10 +7,12 @@ import { UserController } from '../controller/user.controller';
 import { UserService } from '../service/user.service';
 import { AuthorityService } from '../service/authority.service';
 import { AuthorityDataSeederService } from '../../data/data.seeder.service';
+import { UserDao } from '../repository/user.repository';
+import { Logger } from '../../logger';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity, UserAuthorityEntity, AuthorityEntity])],
   controllers: [UserController],
-  providers: [UserService, AuthorityService, AuthorityDataSeederService],
+  providers: [UserService, AuthorityService, UserDao, AuthorityDataSeederService],
 })
 export class UserModule {}
