@@ -18,6 +18,4 @@ export class Result<T> {
   static error<T>(status: HttpStatus, message: string): Result<T> {
     return new Result<T>(status, message);
   }
-
-  // Additional constructors or static methods for specific scenarios...
 }

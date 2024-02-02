@@ -8,7 +8,6 @@ import { UserService } from '../service/user.service';
 import { AuthorityService } from '../service/authority.service';
 import { AuthorityDataSeederService } from '../../data/data.seeder.service';
 import { UserDao } from '../repository/user.repository';
-import { Logger } from '../../logger';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity, UserAuthorityEntity, AuthorityEntity])],
