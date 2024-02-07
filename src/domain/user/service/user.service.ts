@@ -1,4 +1,4 @@
-import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entity/user.entity';
@@ -9,13 +9,16 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { AuthorityService } from './authority.service';
 import { Role } from '../enum/role';
 import { UserDao } from '../repository/user.repository';
+import { LoginRequestDto } from '../dto/login-request.dto';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
               private userDao: UserDao,
-              private authorityService: AuthorityService) {
+              private authorityService: AuthorityService,
+              private jwtService: JwtService) {
   }
 
   public async createUser(createUserDto: CreateUserDto): Promise<Result<CreateUserDto>> {
@@ -36,6 +39,27 @@ export class UserService {
 
     const userDto = CreateUserDto.from(userEntity);
     return Result.success(userDto);
+  }
+
+  public async login(dto: LoginRequestDto): Promise<{ access_token: string }> {
+
+    const email = dto.email;
+    const password = dto.password;
+
+    const userEntity = await this.userDao.getUserEntityByEmail(email);
+    if (!userEntity) {
+      throw new UnauthorizedException('이메일과 비밀번호를 확인해주세요.');
+    }
+
+    if (userEntity.password !== password) {
+      throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
+    }
+
+    const payload = { sub: userEntity.id, username: userEntity.name };
+
+    return {
+      access_token: this.jwtService.sign(payload)
+    };
   }
 
   public async findUserList(): Promise<Result<GetUserDto[]>> {

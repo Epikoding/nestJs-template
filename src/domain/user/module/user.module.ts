@@ -8,9 +8,21 @@ import { UserService } from '../service/user.service';
 import { AuthorityService } from '../service/authority.service';
 import { AuthorityDataSeederService } from '../../data/data.seeder.service';
 import { UserDao } from '../repository/user.repository';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, UserAuthorityEntity, AuthorityEntity])],
+  imports: [
+    TypeOrmModule.forFeature([UserEntity, UserAuthorityEntity, AuthorityEntity]),
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1d' },
+      }),
+    }),
+  ],
   controllers: [UserController],
   providers: [UserService, AuthorityService, UserDao, AuthorityDataSeederService],
 })

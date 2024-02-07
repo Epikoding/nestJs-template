@@ -11,7 +11,7 @@ import { LoggingMiddleware } from './domain/user/middleware/logging.middleware';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // Makes the ConfigService available throughout your application
-      envFilePath: 'local.env'
+      envFilePath: '.env'
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

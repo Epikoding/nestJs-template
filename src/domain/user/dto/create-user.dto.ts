@@ -1,10 +1,20 @@
 import { UserEntity } from '../entity/user.entity';
 import { BaseDto } from '../../../base.dto';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateUserDto extends BaseDto {
+
+  @IsNotEmpty()
+  @IsString()
   readonly name: string;
+
+  @IsNotEmpty()
+  @IsString()
   readonly email: string;
-  readonly password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly password?: string;
 
   // createUser
   constructor(userEntity: UserEntity) {
