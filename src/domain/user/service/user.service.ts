@@ -116,4 +116,8 @@ export class UserService {
 
     return Result.success(userDto);
   }
+
+  async findUserById(userId: number) {
+    return await this.userDao.getUserEntityById(userId);
+  }
 }

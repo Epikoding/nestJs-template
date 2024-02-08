@@ -10,6 +10,10 @@ import { AuthorityDataSeederService } from '../../data/data.seeder.service';
 import { UserDao } from '../repository/user.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { UserAuthorityService } from '../service/user-authority.service';
+import { UserAuthorityDao } from '../repository/user-authority.repository';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from '../../auth/jwt/jwt.guard';
 
 
 @Module({
@@ -19,11 +23,21 @@ import { ConfigService } from '@nestjs/config';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1d' },
-      }),
-    }),
+        signOptions: { expiresIn: '1d' }
+      })
+    })
   ],
   controllers: [UserController],
-  providers: [UserService, AuthorityService, UserDao, AuthorityDataSeederService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard
+    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RolesGuard
+    // },
+    UserService, AuthorityService, UserAuthorityService, UserDao, UserAuthorityDao, AuthorityDataSeederService]
 })
-export class UserModule {}
+export class UserModule {
+}
