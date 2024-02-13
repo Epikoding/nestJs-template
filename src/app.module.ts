@@ -6,6 +6,7 @@ import { UserEntity } from './domain/user/entity/user.entity';
 import { AuthorityEntity } from './domain/user/entity/authority.entity';
 import { UserAuthorityEntity } from './domain/user/entity/user-authority.entity';
 import { LoggingMiddleware } from './domain/user/middleware/logging.middleware';
+import { RedisModule } from './domain/redis/module/redis.module';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { LoggingMiddleware } from './domain/user/middleware/logging.middleware';
       }),
       inject: [ConfigService]
     }),
-    UserModule
+    UserModule, RedisModule
   ]
 })
 export class AppModule implements NestModule {
