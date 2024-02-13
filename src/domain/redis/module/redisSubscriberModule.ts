@@ -11,8 +11,8 @@ import { RedisService } from '../service/redis.service';
         name: 'TEST_SERVICE',
         transport: Transport.REDIS,
         options: {
-          host: 'localhost',
-          port: 6379,
+          host: process.env.REDIS_HOST,
+          port: Number(process.env.REDIS_PORT),
         }
       },
     ]),
@@ -20,5 +20,5 @@ import { RedisService } from '../service/redis.service';
   controllers: [RedisController],
   providers: [RedisService]
 })
-export class RedisModule {
+export class RedisSubscriberModule {
 }
